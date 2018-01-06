@@ -374,7 +374,7 @@ def get_batches(int_text, batch_size, seq_length):
     :param seq_length: The length of sequence
     :return: Batches as a Numpy array
     """
-
+    """
     character_per_batch = batch_size * seq_length
     n_batches = len(int_text) // character_per_batch
     character_used = n_batches*character_per_batch
@@ -398,7 +398,16 @@ def get_batches(int_text, batch_size, seq_length):
         batches_output.append(one_batch_output)
     batches_output = np.array(batches_output)
     return batches_output
-
+    """
+    n_batches = int(len(int_text)/(batch_size*seq_length))
+    #Drop the last few characters to make only full batches
+    xdata = np.array(int_text[: n_batches * batch_size * seq_length])
+    ydata = np.array(int_text[1: n_batches * batch_size * seq_length + 1])
+    ydata[-1] = xdata[0]
+    
+    x_batches = np.split(xdata.reshape(batch_size, -1), n_batches, 1)
+    y_batches = np.split(ydata.reshape(batch_size, -1), n_batches, 1)
+    return np.array(list(zip(x_batches, y_batches)))
 
 """
 DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
@@ -425,15 +434,15 @@ num_epochs = 100
 # Batch Size
 batch_size = 128
 # RNN Size
-rnn_size = 128
+rnn_size = 256
 # Embedding Dimension Size
-embed_dim = 30
+embed_dim = 256
 # Sequence Length
-seq_length = 30
+seq_length = 20
 # Learning Rate
-learning_rate = 0.1
+learning_rate = 0.01
 # Show stats for every n number of batches
-show_every_n_batches = 10
+show_every_n_batches = 1
 
 """
 DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
